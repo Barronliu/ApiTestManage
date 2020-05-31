@@ -11,9 +11,11 @@ def api_upload():
     data = request.files
     # try:
     file = data['file']
+    print("file: ", file)
     skip = request.form.get('skip')
     # print(request.form)
     if os.path.exists(os.path.join(FILE_ADDRESS, file.filename)) and not skip:
+        print("full_adrr: ", os.path.join(FILE_ADDRESS, file.filename))
         return jsonify({"msg": "文件已存在，请修改文件名字后再上传", "status": 0})
 
     else:

@@ -81,6 +81,7 @@ class HarParser(object):
         testcase_dict["name"] = parsed_object.path
 
     def _make_json_data(self, testcase_dict, entry_json):
+        print("entry_json: ", entry_json)
         testcase_dict['name'] = entry_json['name']
         testcase_dict['method'] = entry_json['method']
         if not entry_json['url'].startswith('http'):

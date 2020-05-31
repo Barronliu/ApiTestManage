@@ -217,16 +217,22 @@ def del_api_msg():
 def file_change():
     """ 导入接口信息 """
     data = request.json
-    project_name = data.get('projectName')
+    #changed by barron,use projectid to find the project
+    project_id = data.get('projectId')
+    #project_name = data.get('projectName')
     module_id = data.get('moduleId')
-    if not module_id and not project_name:
+    print("project_id: ", project_id)
+    print("module_id: ", module_id)
+    if not module_id and not project_id:
         return jsonify({'msg': '项目和模块不能为空', 'status': 0})
     import_format = data.get('importFormat')
     if not import_format:
         return jsonify({'msg': '请选择文件格式', 'status': 0})
 
     import_format = 'har' if import_format == 'HAR' else 'json'
-    project_data = Project.query.filter_by(name=project_name).first()
+    # changed by barron,use projectid to find the project
+    project_data = Project.query.filter_by(id=project_id).first()
+    #project_data = Project.query.filter_by(name=project_name).first()
     host = json.loads(project_data.host)
 
     import_api_address = data.get('importApiAddress')
