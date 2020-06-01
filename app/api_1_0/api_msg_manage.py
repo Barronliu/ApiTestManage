@@ -107,6 +107,7 @@ def edit_api_msg():
     data = request.json
     case_id = data.get('apiMsgId')
     _edit = ApiMsg.query.filter_by(id=case_id).first()
+    #返回数据增加module_id和project_id，便于前端获取接口对应的项目和模块信息
     _data = {'name': _edit.name, 'num': _edit.num, 'desc': _edit.desc, 'url': _edit.url, 'skip': _edit.skip,
              'method': _edit.method, 'status_url': int(_edit.status_url),
              'up_func': _edit.up_func, 'down_func': _edit.down_func,
@@ -116,7 +117,9 @@ def edit_api_msg():
              'variable': json.loads(_edit.variable),
              'json_variable': _edit.json_variable,
              'extract': json.loads(_edit.extract),
-             'validate': json.loads(_edit.validate)}
+             'validate': json.loads(_edit.validate),
+             'module_id': _edit.module_id,
+             'project_id': _edit.project_id}
     return jsonify({'data': _data, 'status': 1})
 
 
@@ -221,8 +224,6 @@ def file_change():
     project_id = data.get('projectId')
     #project_name = data.get('projectName')
     module_id = data.get('moduleId')
-    print("project_id: ", project_id)
-    print("module_id: ", module_id)
     if not module_id and not project_id:
         return jsonify({'msg': '项目和模块不能为空', 'status': 0})
     import_format = data.get('importFormat')

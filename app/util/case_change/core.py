@@ -202,5 +202,6 @@ class HarParser(object):
 
 
 if __name__ == '__main__':
-    har_parser = HarParser('test.har')
+    har_parser = HarParser('HARV1.1.har')
     print(har_parser.testset)
+    print("testcase: ", har_parser.make_testcases())
