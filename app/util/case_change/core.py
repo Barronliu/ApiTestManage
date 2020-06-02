@@ -21,6 +21,16 @@ def convert_list_to_dict(origin_list):
     }
 
 
+#postman导出文件的解析，add by barron
+def format_entries(items, entries_data=[]):
+    for item_temp in items:
+        if 'request' in item_temp.keys():
+            entries_data.append(item_temp)
+            continue
+        format_entries(item_temp['item'])
+    return entries_data
+
+
 def load_api_log_entries(file_path, file_type):
     """
     """
@@ -30,7 +40,9 @@ def load_api_log_entries(file_path, file_type):
             if file_type == 'har':
                 return content_json["log"]["entries"]
             elif file_type == 'json':
-                return content_json['requests']
+                items = content_json['item']
+                _entries = format_entries(items)
+                return _entries
         except (KeyError, TypeError):
             logging.error("api_1_0 file content error: {}".format(file_path))
             sys.exit(1)
@@ -66,7 +78,6 @@ class HarParser(object):
         """ parse HAR entry request url and queryString, and make testcase url and params
         """
         request_params = convert_list_to_dict(entry_json["request"].get("queryString", []))
-
         url = entry_json["request"].get("url")
         if not url:
             logging.exception("url missed in request.")
@@ -81,28 +92,37 @@ class HarParser(object):
         testcase_dict["name"] = parsed_object.path
 
     def _make_json_data(self, testcase_dict, entry_json):
-        print("entry_json: ", entry_json)
         testcase_dict['name'] = entry_json['name']
-        testcase_dict['method'] = entry_json['method']
-        if not entry_json['url'].startswith('http'):
-            entry_json['url'] = 'http://' + entry_json['url']
-        url = urlparse(entry_json['url'])
+        testcase_dict['method'] = entry_json['request']['method']
+        url_temp = entry_json['request']['url'].get('raw')
+        if not url_temp.startswith('http'):
+            url_temp = 'http://' + url_temp
+        url = urlparse(url_temp)
         testcase_dict['url'] = url.path
         if url.netloc:
             testcase_dict['status_url'] = url.netloc
         else:
             testcase_dict['status_url'] = url.scheme
         testcase_dict['header'] = json.dumps(
-            [{'key': h['key'], 'value': h['value']} for h in entry_json['headerData'] if h])
-        if entry_json['method'] == 'GET':
-            testcase_dict['param'] = json.dumps(
-                [{'key': h1['key'], 'value': h1['value'], 'param_type': 'string'} for h1 in entry_json['queryParams'] if
-                 h1])
-        if entry_json['method'] != 'GET':
-            if entry_json['data']:
-                testcase_dict['variable'] = json.dumps(
-                    [{'key': h1['key'], 'value': h1['value'], 'param_type': 'string'} for h1 in
-                     entry_json['data'] if h1])
+            [{'key': h['key'], 'value': h['value']} for h in entry_json['request']['header'] if h])
+        if entry_json['request']['method'] == 'GET':
+            query = entry_json.get('request').get('url').get("query")
+            if query:
+                testcase_dict['param'] \
+                = json.dumps([{'key': h1['key'], 'value': h1['value'], 'param_type': 'string'} for h1 in query if h1])
+            else:
+                testcase_dict['param'] = {}
+        #非get请求，还需要补充非formdata模式请求的兼容情况
+        if entry_json['request']['method'] != 'GET':
+            body = entry_json['request']['body']
+            if body:
+                if body.get('mode') == 'formdata':
+                    testcase_dict['variable'] = json.dumps(
+                        [{'key': h1['key'], 'value': h1['value'], 'param_type': 'string'} for h1 in
+                         body.get('formdata') if h1])
+                elif body.get('mode') == 'raw':
+                    testcase_dict['variable_type'] = 'json'
+                    testcase_dict['json_variable'] = body.get('raw')
             elif entry_json.get('rawModeData'):
                 testcase_dict['variable_type'] = 'json'
                 testcase_dict['json_variable'] = entry_json['rawModeData']
@@ -202,6 +222,9 @@ class HarParser(object):
 
 
 if __name__ == '__main__':
-    har_parser = HarParser('HARV1.1.har')
-    print(har_parser.testset)
-    print("testcase: ", har_parser.make_testcases())
+    file_type = 'json'
+    #"APP.postman_collection.json"
+    HarParser = HarParser("APP.postman_collection.json", file_type)
+    #load_api_log_entries("APP.postman_collection.json", file_type)
+    HarParser.make_testset()
+
