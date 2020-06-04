@@ -101,9 +101,16 @@ def add_task():
     if not (not to_email and not send_email and not password) and not (to_email and send_email and password):
         return jsonify({'msg': '发件人、收件人、密码3个必须都为空，或者都必须有值', 'status': 0})
 
+    #changed by barron,优化时间配置，校验接收到的数据是否合法，并细化错误信息
     time_config = data.get('timeConfig')
-    if len(time_config.strip().split(' ')) != 6:
-        return jsonify({'msg': 'cron格式错误', 'status': 0})
+    time_config_arry = data.get('timeConfig').strip().split(' ')
+    if len(time_config_arry) == 6:
+        for time_nub in time_config_arry:
+            if time_nub.isdigit() or time_nub == '*':
+                continue
+            return jsonify({'msg': '时间配置格式错误，只支持数字或*', 'status': 0})
+    else:
+        return jsonify({'msg': '时间配置格式错误，请输入6个数字并用空格分割开', 'status': 0})
 
     if task_id:
         old_task_data = Task.query.filter_by(id=task_id).first()
