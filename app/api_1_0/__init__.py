@@ -2,10 +2,11 @@ from flask import Blueprint, current_app, request
 from ..util.custom_decorator import login_required
 import copy
 import json
+import werkzeug
 api = Blueprint('api', __name__)
 
 from . import api_msg_manage, module_manage, project_manage, report_manage, build_in_manage, case_manage, login, \
-    test_tool, task_manage, file_manage, config, case_set_manage, errors
+    test_tool, task_manage, file_manage, config, case_set_manage, errors, xmind_to_testcase
 
 
 @api.before_request
@@ -16,6 +17,9 @@ def before_request():
 @api.after_request
 def after_request(r):
     result = copy.copy(r.response)
+    print("result: ", type(result))
+    if isinstance(result, werkzeug.wsgi.FileWrapper):
+        return r
     if isinstance(result[0], bytes):
         result[0] = bytes.decode(result[0])
     if 'apiMsg/run' not in request.url and 'report/run' not in request.url and 'report/list' not in request.url:

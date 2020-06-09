@@ -695,6 +695,9 @@ TEMP_REPORT = os.path.abspath('.') + r'/app/util/report'
 FUNC_ADDRESS = os.path.abspath('.') + r'/func_list'
 FILE_ADDRESS = os.path.abspath('..') + r'/files/'
 
+#add by barron，允许上传的文件类型
+ALLOWED_EXTENSIONS = {'json', 'har', 'xmind', 'jpg', 'jpeg', 'gif'}
+
 
 def _check_file_path():
     if not os.path.exists(REPORT_ADDRESS):
