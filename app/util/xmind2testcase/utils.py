@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # _*_ coding:utf-8 _*_
+
 import json
-import os
 import xmind
 import logging
-from .parser import xmind_to_testsuites
+from app.util.xmind2testcase.parser import xmind_to_testsuites
+from app.util.global_variable import *
+
 
 
 def get_absolute_path(path):
@@ -24,7 +26,7 @@ def get_absolute_path(path):
 
 def get_xmind_testsuites(xmind_file):
     """Load the XMind file and parse to `xmind2testcase.metadata.TestSuite` list"""
-    xmind_file = get_absolute_path(xmind_file)
+    #xmind_file = get_absolute_path(xmind_file)
     workbook = xmind.load(xmind_file)
     xmind_content_dict = workbook.getData()
     logging.debug("loading XMind file(%s) dict data: %s", xmind_file, xmind_content_dict)
@@ -43,9 +45,9 @@ def get_xmind_testsuite_list(xmind_file):
     :param xmind_file: the target XMind file
     :return: a list of testsuite data
     """
-    xmind_file = get_absolute_path(xmind_file)
+    #xmind_file = get_absolute_path(xmind_file)
     logging.info('Start converting XMind file(%s) to testsuite data list...', xmind_file)
-    testsuite_list = get_xmind_testsuites(xmind_file)
+    testsuite_list, _ = get_xmind_testsuites(xmind_file)
     suite_data_list = []
 
     for testsuite in testsuite_list:
@@ -142,4 +144,6 @@ def xmind_testcase_to_json_file(xmind_file):
 
 if __name__ == "__main__":
     #get_xmind_testsuite_list("Demo.xmind")
-    get_xmind_testcase_list("Demo.xmind")
+    #get_xmind_testcase_list("Demo.xmind")
+    #get_xmind_testsuites("优化点-V6.1.xmind")
+    get_xmind_testsuite_list("优化点-V6.1.xmind")

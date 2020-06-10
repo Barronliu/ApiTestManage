@@ -694,6 +694,7 @@ LOG_ADDRESS = os.path.abspath('..') + r'/logs/'
 TEMP_REPORT = os.path.abspath('.') + r'/app/util/report'
 FUNC_ADDRESS = os.path.abspath('.') + r'/func_list'
 FILE_ADDRESS = os.path.abspath('..') + r'/files/'
+TEMPLATES = os.path.abspath('.') + r'/templates'
 
 #add by barron，允许上传的文件类型
 ALLOWED_EXTENSIONS = {'json', 'har', 'xmind', 'jpg', 'jpeg', 'gif'}

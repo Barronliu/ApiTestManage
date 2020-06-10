@@ -17,11 +17,10 @@ def before_request():
 @api.after_request
 def after_request(r):
     result = copy.copy(r.response)
-    print("result: ", type(result))
-    if isinstance(result, werkzeug.wsgi.FileWrapper):
+    if isinstance(result, werkzeug.wsgi.FileWrapper) or isinstance(result, list):
         return r
     if isinstance(result[0], bytes):
         result[0] = bytes.decode(result[0])
-    if 'apiMsg/run' not in request.url and 'report/run' not in request.url and 'report/list' not in request.url:
+    if 'apiMsg/run' not in request.url and 'report/run' not in request.url and 'report/list' not in request.url and 'static/css' not in request.url:
         current_app.logger.info('url:{} ,method:{},返回数据:{}'.format(request.url, request.method, json.loads(result[0])))
     return r

@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # _*_ coding:utf-8 _*_
 
-import logging
+import sys, os
+sys.path.append(os.path.dirname(__file__) + os.sep + '../')
 from .metadata import TestSuite, TestCase, TestStep
+import logging
 
 config = {'sep': ' ',
           'valid_sep': '&>+/-',
@@ -164,7 +166,6 @@ def parse_a_testcase(case_dict, parent, suite_title, case_title):
             testcase.result = step.result  # there is no need to judge where test step are ignored
 
     logging.debug('finds a testcase: %s', testcase.to_dict())
-    print("testcase: ", testcase.to_dict())
     return testcase
 
 

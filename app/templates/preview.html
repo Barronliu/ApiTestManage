@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ name }} | Xmind2TestCase Preview</title>
+    <!--使用静态资源时如果不设置,_external=True，导致生成的URL不完整，从而不生效-->
+    <link rel="shortcut icon" href="{{url_for('static',filename='favicon.ico',_external=True)}}" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" media="all" href="{{url_for('static',filename='css/pure-min.css',_external=True)}}">
+    <link rel="stylesheet" type="text/css" media="all" href="{{url_for('static',filename='css/custom.css',_external=True)}}">
+</head>
+<body>
+<div class="header">
+    <h1>{{ name }} - Preview</h1>
+    <h2>TestSuites: {{ suite_count }} / TestCases: {{ suite | length }}
+        / <a href="{{ url_for('api.api_download_file') }}?filename={{ csv_name }}">下载CSV文件</a></h2>
+</div>
+<table class="pure-table tests-table">
+    <thead>
+    <tr>
+        <th width="5%">#</th>
+        <th width="10%">Suite</th>
+        <th>Title</th>
+        <th width="200px">Attributes</th>
+        <th width="23%">Steps</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for test in suite %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ test.suite }}</td>
+            <td {% if test.name|length>100 %}class="long-name" {% endif %}>{{ test.name }}
+                {% if test.name|length>100 %}
+                    <span class="long-name-info">Warn: test name might be too long: {{ test.name|length }}!</span>
+                {% endif %}
+            </td>
+            <td>
+                <div class="tag-success tooltip">
+                    Priority {{ test.importance }}
+                    <span class="tooltiptext">Priority {{ test.importance }} </span>
+                </div>
+                {% if test.preconditions %}
+                    <div class="pure-button tag-info tooltip">PreCond.
+                        <p class="tooltiptext">
+                            <b>Preconditions:</b> <br>
+                            {{ test.preconditions | replace('\n','<br>') |safe }}
+                        </p></div>
+                {% endif %}
+                {% if test.summary %}
+                    <div class="pure-button tag-warn tooltip">Summary
+                        <p class="tooltiptext">
+                            <b>Summary:</b> <br>
+                            {{ test.summary | replace('\n','<br>') |safe }}
+                        </p></div>
+                {% endif %}
+            <td>
+                {% if test.steps %}
+                    <ol>
+                        {% for step in test.steps %}
+                            <li>{{ step.actions }}
+                                {% if step.expectedresults %}
+                                    <ul>
+                                        <li>{{ step.expectedresults }}</li>
+                                    </ul>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ol>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>
