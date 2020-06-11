@@ -38,6 +38,7 @@ def api_download_file():
         abort(404)
     return send_from_directory(FILE_ADDRESS, filename, as_attachment=True)
 
+
 #删除文件
 @api.route('/deleteFile', methods=['POST'])
 @login_required
@@ -50,7 +51,7 @@ def delete_file():
     try:
         os.remove(file_full_name)
     except:
-        return jsonify({'msg': "服务器兄弟累累，请稍后重试！", 'status': 0})
+        return jsonify({'msg': "服务器兄弟累了，请稍后重试！", 'status': 0})
     return jsonify({'msg': "{}删除成功！".format(filename), 'status': 1})
 
 

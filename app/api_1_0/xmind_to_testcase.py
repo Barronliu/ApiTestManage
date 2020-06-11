@@ -29,13 +29,15 @@ def preview_file():
     full_adress = join(FILE_ADDRESS, filename_xmind)
     if not exists(full_adress):
         return jsonify({'msg': "请上传文件", 'status': 0})
+    zentao_csv_file = xmind_to_zentao_csv_file(full_adress)
     testsuites, _ = get_xmind_testsuites(full_adress)
+    if zentao_csv_file:
+        filename_zandao = os.path.basename(zentao_csv_file)
     suite_count = 0
     for suite in testsuites:
         suite_count += len(suite.sub_suites)
 
     testcases = get_xmind_testcase_list(full_adress)
-    csv_file_name = os.path.splitext(filename_xmind)[0] + ".csv"
 
-    return render_template("preview.html", name=filename_xmind, suite=testcases, suite_count=suite_count, csv_name=csv_file_name)
+    return render_template("preview.html", name=filename_xmind, suite=testcases, suite_count=suite_count, csv_name=filename_zandao)
 
