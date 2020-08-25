@@ -8,6 +8,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 # 上传文件
 @api.route('/upload', methods=['POST'], strict_slashes=False)
 @login_required
@@ -25,11 +26,10 @@ def api_upload():
         else:
             file.save(os.path.join(FILE_ADDRESS, filename))
             return jsonify({'data': {'file_address': os.path.join(FILE_ADDRESS, filename), 'filename': filename}, "msg": "上传成功", "status": 1})
-    flash('文件不存在或不支持的文件类型，请重新上传')
     return jsonify({'msg': '不支持的文件', 'status': 0})
 
 
-#下载文件
+# 下载文件
 @api.route('/downloadFile')
 @login_required
 def api_download_file():
@@ -39,7 +39,7 @@ def api_download_file():
     return send_from_directory(FILE_ADDRESS, filename, as_attachment=True)
 
 
-#删除文件
+# 删除文件
 @api.route('/deleteFile', methods=['POST'])
 @login_required
 def delete_file():

@@ -4,6 +4,8 @@ import importlib
 import json
 import re
 import types
+import socket
+import time
 
 
 def auto_num(num, model, **kwargs):
@@ -237,14 +239,29 @@ def encode_object(obj):
     # raise TypeError("{} is not JSON serializable".format(obj))
 
 
+def get_host_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+    finally:
+        s.close()
+
+    return ip
+
+def get_current_time():
+    current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    return current_time
+
 if __name__ == '__main__':
     # func_list = importlib.reload(importlib.import_module(r"func_list.abuild_in_fun.py"))
     # module_functions_dict = {name: item for name, item in vars(func_list).items() if
     #                          isinstance(item, types.FunctionType)}
     # print(module_functions_dict)
-    a = '${func({"birthday": "199-02-02"; "expire_age": "65周岁"; "sex": "2"},123,3245)}'
-    b = '${func([123],123)}'
-    print(extract_functions(a))
+    #a = '${func({"birthday": "199-02-02"; "expire_age": "65周岁"; "sex": "2"},123,3245)}'
+    #b = '${func([123],123)}'
+    #print(extract_functions(a))
     # matched = parse_function(extract_functions(b)[0])
     #
     # print(matched)
+    print(get_current_time())

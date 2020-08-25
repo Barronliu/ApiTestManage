@@ -114,7 +114,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CSRF_ENABLED = True
     UPLOAD_FOLDER = '/upload'
-    # DEBUG = True
+    DEBUG = False
     SCHEDULER_API_ENABLED = True
 
     @staticmethod
@@ -125,6 +125,7 @@ class Config:
 class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
     SCHEDULER_JOBSTORES = {'default': SQLAlchemyJobStore(url=SQLALCHEMY_DATABASE_URI)}
+    DEBUG = True
 
 
 class ProductionConfig(Config):

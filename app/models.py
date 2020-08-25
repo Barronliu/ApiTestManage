@@ -7,6 +7,8 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from collections import OrderedDict
 
+from .util.excel_parser.excel_parser import excelHandle
+
 roles_permissions = db.Table('roles_permissions',
                              db.Column('role_id', db.Integer, db.ForeignKey('role.id')),
                              db.Column('permission_id', db.Integer, db.ForeignKey('permission.id')))
@@ -242,6 +244,27 @@ class Task(db.Model):
     project_id = db.Column(db.String(16), nullable=True)
     created_time = db.Column(db.DateTime(), default=datetime.now, comment='任务的创建时间')
     update_time = db.Column(db.DateTime, index=True, default=datetime.now, onupdate=datetime.now)
+
+
+class Maidian(db.Model):
+    __tablename__ = 'maidian'
+    id = db.Column(db.Integer(), primary_key=True, comment='主键，自增')
+    event = db.Column(db.String(256), index=True, comment='事件名')
+    page_or_element_name = db.Column(db.String(256), index=True, comment='页面或元素名称')
+    is_page = db.Column(db.Integer(), comment='是页面还是元素')
+    params = db.Column(db.String(256), comment='参数名')
+    params_type = db.Column(db.String(16), comment='参数类型')
+
+    def to_dict(self):
+        '''将对象转换为字典数据'''
+        user_dict = {
+            "event_name": self.event,
+            "element_name": self.page_or_element_name,
+            "is_page": self.is_page,
+            "params": self.params,
+            "params_type": self.params_type
+        }
+        return user_dict
 
 
 @login_manager.user_loader
